@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="An animated walkthrough of the CWRU bearing diagnostic workflow, from 12 kHz CSV to model result.">
+  <meta name="theme-color" content="#f3f0e7">
+  <title>How the Bearing Diagnostic Works</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%2324231f'/%3E%3Ccircle cx='32' cy='32' r='19' fill='none' stroke='%23f3f0e7' stroke-width='5'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%239f5538'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../"><span class="brand-mark"></span>CWRU / BD-25</a>
+    <nav aria-label="Demo navigation"><a href="#live-demo">Walkthrough</a><a href="#sampling">12 vs 48 kHz</a><a href="#csv">CSV guide</a></nav>
+    <a class="back" href="../">Main instrument</a>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div>
+        <p class="eyebrow">Guided system demo / real model data</p>
+        <h1>From vibration<br>to <em>diagnosis.</em></h1>
+        <p class="lede">See exactly what happens after a 12 kHz CSV enters the browser—without hiding the filtering, windowing, features, or limitations.</p>
+        <a class="button" href="#live-demo">Begin walkthrough</a>
+      </div>
+      <div class="hero-flow" aria-label="Six-stage diagnostic workflow">
+        <div><b>01</b><span>CSV</span><i></i></div><div><b>02</b><span>Validate</span><i></i></div><div><b>03</b><span>Window</span><i></i></div>
+        <div><b>04</b><span>Features</span><i></i></div><div><b>05</b><span>Forest</span><i></i></div><div><b>06</b><span>Result</span></div>
+      </div>
+    </section>
+
+    <section id="live-demo" class="section dark">
+      <div class="shell">
+        <header class="section-head"><p>Interactive walkthrough</p><span>REAL EXPORTED FOREST</span><h2>Follow one signal through the system.</h2></header>
+        <div class="sample-tabs" role="group" aria-label="Choose a demonstration signal">
+          <button class="active" data-sample="healthy">097 <small>Normal</small></button>
+          <button data-sample="inner">105 <small>Inner race</small></button>
+          <button data-sample="ball">118 <small>Ball</small></button>
+          <button data-sample="outer">130 <small>Outer race</small></button>
+        </div>
+        <div class="demo-console">
+          <div class="signal-panel">
+            <div class="panel-head"><span>Input / 12 kHz CSV</span><b id="file-label">FILE 097</b></div>
+            <canvas id="wave" aria-label="Selected CWRU vibration waveform"></canvas>
+            <div class="signal-meta"><span>2,048 source values</span><span>1 × 2,048 window</span><span>0.1707 seconds</span></div>
+          </div>
+          <div class="result-panel" aria-live="polite">
+            <div><span>Condition</span><strong id="condition">HEALTHY</strong><small id="condition-confidence">100.0% confidence</small></div>
+            <div><span>Fault type</span><strong id="fault">NORMAL</strong></div>
+            <div id="probabilities" class="probabilities"></div>
+          </div>
+        </div>
+        <div class="walkthrough">
+          <ol id="stages">
+            <li class="active"><b>01</b><span>Read CSV</span></li><li><b>02</b><span>Validate</span></li><li><b>03</b><span>Window</span></li>
+            <li><b>04</b><span>Extract</span></li><li><b>05</b><span>Classify</span></li><li><b>06</b><span>Explain</span></li>
+          </ol>
+          <div class="stage-copy"><span id="stage-kicker">STAGE 01 / INPUT</span><h3 id="stage-title">Read numeric acceleration values</h3><p id="stage-body">The browser reads one numeric channel from the CSV. Commas, semicolons, spaces and line breaks are accepted separators.</p></div>
+          <button id="play" class="play" type="button">Play all stages</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="sampling" class="section shell">
+      <header class="section-head"><p>Sampling explained</p><span>SAME MOTION / DIFFERENT DETAIL</span><h2>48 kHz records more. The model expects 12 kHz.</h2></header>
+      <div class="sample-compare">
+        <article><div class="rate"><strong>48,000</strong><span>samples / second</span></div><canvas id="wave48" aria-label="Conceptual 48 kHz sampling animation"></canvas><dl><div><dt>Nyquist limit</dt><dd>24 kHz</dd></div><div><dt>Role here</dt><dd>Raw normal files</dd></div></dl></article>
+        <div class="filter-box"><span>ANTI-ALIAS FILTER</span><strong>FIR</strong><b>÷ 4</b><p>Remove frequencies that cannot exist safely at the lower rate, then keep every fourth filtered sample.</p></div>
+        <article><div class="rate"><strong>12,000</strong><span>samples / second</span></div><canvas id="wave12" aria-label="Conceptual 12 kHz sampling animation"></canvas><dl><div><dt>Nyquist limit</dt><dd>6 kHz</dd></div><div><dt>Role here</dt><dd>Model input</dd></div></dl></article>
+      </div>
+      <aside class="plain-note"><b>Why not upload 48 kHz directly?</b><p>The feature values would describe a different frequency range and time scale than the model learned. More samples are not automatically better when the deployed model was trained on unified 12 kHz signals.</p></aside>
+    </section>
+
+    <section id="csv" class="section paper-alt">
+      <div class="shell">
+        <header class="section-head"><p>CSV preparation</p><span>ONE COLUMN / NUMBERS ONLY</span><h2>Give the model the signal—not the spreadsheet.</h2></header>
+        <div class="csv-grid">
+          <div class="csv-card"><div class="panel-head"><span>097_normal.csv</span><b>VALID</b></div><pre id="csv-lines" aria-label="Example numeric CSV">0.05597140
+0.04748160
+0.06211750
+0.11926310
+0.06419700
+-0.18756570
+0.10917410
+-0.02217290</pre><div class="scan-line" aria-hidden="true"></div></div>
+          <div class="requirements">
+            <article><b>01</b><h3>12 kHz</h3><p>Resample first if the recorder uses another rate.</p></article>
+            <article><b>02</b><h3>≥ 2,048 values</h3><p>Each complete block becomes one analysis window.</p></article>
+            <article><b>03</b><h3>Numbers only</h3><p>No header, timestamps, units, or second channel.</p></article>
+            <article><b>04</b><h3>Exact blocks help</h3><p>Incomplete values after the last full window are ignored.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell">
+      <header class="section-head"><p>Inside every 2,048-sample window</p><span>0.1707 SECONDS</span><h2>The model never sees the file name or operating label.</h2></header>
+      <div class="feature-route">
+        <article><b>01</b><h3>Time statistics</h3><p>RMS, standard deviation, peak, peak-to-peak, skewness and kurtosis.</p></article>
+        <article><b>02</b><h3>Impact ratios</h3><p>Crest, shape, impulse and margin factors describe impulsiveness.</p></article>
+        <article><b>03</b><h3>Spectrum</h3><p>Hann-windowed FFT yields peak frequency, centroid, spread, entropy and kurtosis.</p></article>
+        <article><b>04</b><h3>Eight bands</h3><p>Energy from 0–6 kHz is divided into eight regions.</p></article>
+        <article class="forest"><b>25 FEATURES</b><h3>250 trees vote</h3><p>One forest decides Healthy/Faulty. Another chooses Normal, Inner Race, Ball or Outer Race.</p></article>
+      </div>
+    </section>
+
+    <section class="section limits">
+      <div class="shell limits-grid">
+        <div><p class="eyebrow">What the result means</p><h2>Evidence,<br>not certification.</h2></div>
+        <div><p><b>Confidence</b> is the average tree probability across all complete windows.</p><p><b>Health Index</b> is 100 × Healthy probability. It is not remaining useful life.</p><p><b>Field use</b> requires validation on the actual machine, sensor mounting, load and naturally occurring faults.</p><a class="button light" href="../#diagnostic">Open the diagnostic</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell"><a class="brand" href="../"><span class="brand-mark"></span>CWRU / BD-25</a><p>Real vibration. Visible workflow. Honest limits.</p><span>DEMO / REV. 01</span></div></footer>
+  <script src="../site-data.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>

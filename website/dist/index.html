@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="CWRU bearing fault diagnosis from vibration signals using leakage-safe machine learning.">
+  <meta name="theme-color" content="#f3f0e7">
+  <title>CWRU Bearing Diagnostics</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%2324231f'/%3E%3Ccircle cx='32' cy='32' r='19' fill='none' stroke='%23f3f0e7' stroke-width='5'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%236e8065'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="grid" aria-hidden="true"></canvas>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="CWRU Bearing Diagnostics home"><span class="brand-mark"></span>CWRU / BD-25</a>
+    <nav aria-label="Primary navigation">
+      <a href="#method">Method</a><a href="#signal-lab">Signals</a><a href="#validation">Validation</a><a href="#results">Results</a><a href="demo/">Demo</a>
+    </nav>
+    <a class="status" href="#diagnostic"><i></i> System online</a>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy reveal">
+        <p class="eyebrow">Vibration intelligence system / rev. 01</p>
+        <h1>Listen to the<br><em>machine.</em></h1>
+        <p class="lede">Bearing condition diagnosis from real Drive-End vibration signatures, engineered for traceability—not spectacle.</p>
+        <div class="actions">
+          <a class="button primary" href="#diagnostic">Run diagnostic <span>↘</span></a>
+          <a class="button" href="#method">Explore methodology</a>
+        </div>
+      </div>
+      <aside class="instrument hero-instrument reveal" aria-label="System specifications and live waveform">
+        <div class="instrument-head"><span><i></i> Live signal monitor</span><b>DE_TIME / 097</b></div>
+        <div class="chart-wrap hero-chart"><canvas id="hero-wave" aria-label="Real CWRU healthy vibration waveform"></canvas><span class="axis y">AMP</span><span class="axis x">170.7 ms</span></div>
+        <dl class="spec-grid">
+          <div><dt>Model</dt><dd>Random Forest</dd></div><div><dt>Sampling</dt><dd>12 kHz</dd></div>
+          <div><dt>Window</dt><dd>2048 samples</dd></div><div><dt>Features</dt><dd>25 signal-only</dd></div>
+        </dl>
+      </aside>
+      <div class="hero-index mono" aria-hidden="true">BD<span>—</span>25</div>
+    </section>
+
+    <div class="ticker" aria-label="System facts"><div>
+      <span>40 real recordings</span><b>✦</b><span>Drive-End channel</span><b>✦</b><span>Grouped by File_ID</span><b>✦</b><span>Seed 42</span><b>✦</b><span>Field validation pending</span><b>✦</b>
+      <span>40 real recordings</span><b>✦</b><span>Drive-End channel</span><b>✦</b><span>Grouped by File_ID</span><b>✦</b><span>Seed 42</span><b>✦</b><span>Field validation pending</span><b>✦</b>
+    </div></div>
+
+    <section id="method" class="section shell">
+      <header class="section-head reveal"><p>System architecture</p><span>00 / METHOD</span><h2>From physical motion<br>to a defensible decision.</h2></header>
+      <div class="pipeline reveal" aria-label="Diagnostic pipeline">
+        <article><b>01</b><span class="pipeline-icon">〽</span><h3>Real vibration</h3><p>Official CWRU Drive-End recordings.</p></article>
+        <article><b>02</b><span class="pipeline-icon">≋</span><h3>Normalize</h3><p>Sampling unified at 12 kHz.</p></article>
+        <article><b>03</b><span class="pipeline-icon">▥</span><h3>Window</h3><p>2048 samples, zero overlap.</p></article>
+        <article><b>04</b><span class="pipeline-icon">ƒ</span><h3>Extract</h3><p>25 signal-derived features.</p></article>
+        <article><b>05</b><span class="pipeline-icon">⋔</span><h3>Classify</h3><p>File-grouped Random Forest.</p></article>
+        <article><b>06</b><span class="pipeline-icon">◎</span><h3>Interpret</h3><p>Condition, fault and health index.</p></article>
+      </div>
+    </section>
+
+    <section id="acquisition" class="section section-dark">
+      <div class="shell">
+        <header class="section-head light reveal"><p>01 / SIGNAL ACQUISITION</p><span>DATA ARCHIVE</span><h2>Forty recordings.<br>Every origin accounted for.</h2></header>
+        <div class="archive-layout">
+          <div class="big-stats reveal">
+            <article><strong data-count="40">40</strong><span>recordings</span></article>
+            <article><strong>12<small> kHz</small></strong><span>final sampling</span></article>
+            <article><strong data-count="4">4</strong><span>load conditions</span></article>
+            <article><strong data-count="3">3</strong><span>fault types</span></article>
+          </div>
+          <div class="archive reveal">
+            <div class="archive-key"><span>File matrix / loads →</span><b>0 HP</b><b>1 HP</b><b>2 HP</b><b>3 HP</b></div>
+            <div class="archive-row healthy"><span>Normal</span><b>097</b><b>098</b><b>099</b><b>100</b></div>
+            <div class="archive-row"><span>Inner / .007</span><b>105</b><b>106</b><b>107</b><b>108</b></div>
+            <div class="archive-row"><span>Ball / .007</span><b>118</b><b>119</b><b>120</b><b>121</b></div>
+            <div class="archive-row"><span>Outer / .007</span><b>130</b><b>131</b><b>132</b><b>133</b></div>
+            <div class="archive-row dim"><span>+ .014 / .021 in</span><b>12</b><b>12</b><b>12</b><b>12</b></div>
+            <p>4 Normal · 12 Inner Race · 12 Ball · 12 Outer Race at 6 o'clock. Fault diameters: 0.007, 0.014 and 0.021 inches.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="processing" class="section shell">
+      <header class="section-head reveal"><p>02 / SIGNAL PROCESSING</p><span>ONE PHYSICAL SCALE</span><h2>Different inputs.<br>One honest measurement frame.</h2></header>
+      <div class="processing-layout">
+        <div class="conversion instrument reveal">
+          <div class="instrument-head"><span>Normal baseline conversion</span><b>ANTI-ALIAS ON</b></div>
+          <div class="conversion-flow"><div><strong>48</strong><span>kHz normal</span></div><i>→</i><div class="filter"><small>FIR</small><strong>÷4</strong><span>zero-phase</span></div><i>→</i><div><strong>12</strong><span>kHz unified</span></div></div>
+          <p>Order-80 Hamming-window FIR filtering suppresses content above the new Nyquist limit before downsampling.</p>
+        </div>
+        <div class="process-specs reveal">
+          <article><span>Primary window</span><strong>2048</strong><small>samples</small></article>
+          <article><span>Duration</span><strong>0.1707</strong><small>seconds</small></article>
+          <article><span>FFT resolution</span><strong>5.859</strong><small>Hz / bin</small></article>
+          <article><span>Spectrum</span><strong>0—6000</strong><small>Hz</small></article>
+        </div>
+      </div>
+      <div class="alt-config reveal"><span>Alternative analysis configuration</span><b>4096 samples</b><b>0.3413 seconds</b><b>2.9297 Hz / bin</b><p>Generated and validated, but not used by the deployed model.</p></div>
+    </section>
+
+    <section id="signal-lab" class="section signal-section">
+      <div class="shell">
+        <header class="section-head reveal"><p>LIVE SIGNAL LAB</p><span>REAL CWRU WINDOWS</span><h2>Time tells the impact.<br>Frequency tells the pattern.</h2></header>
+        <div class="signal-tabs reveal" role="tablist" aria-label="Select bearing condition">
+          <button class="active" data-sample="healthy" role="tab">Healthy <small>097</small></button>
+          <button data-sample="inner" role="tab">Inner Race <small>105</small></button>
+          <button data-sample="ball" role="tab">Ball <small>118</small></button>
+          <button data-sample="outer" role="tab">Outer Race <small>130</small></button>
+        </div>
+        <div class="dual-scope reveal">
+          <div class="instrument"><div class="instrument-head"><span>Time domain / amplitude</span><b id="wave-file">FILE 097</b></div><div class="chart-wrap"><canvas id="wave-chart" aria-label="Selected real vibration signal"></canvas><span class="axis y">AMP</span><span class="axis x">TIME / 0.1707 s</span><span class="crosshair-label" id="wave-readout"></span></div></div>
+          <div class="instrument"><div class="instrument-head"><span>Frequency domain / magnitude</span><b>HANN / RFFT</b></div><div class="chart-wrap"><canvas id="fft-chart" aria-label="Selected signal FFT spectrum"></canvas><span class="axis y">MAG</span><span class="axis x">FREQUENCY / 0—6000 Hz</span><span class="crosshair-label" id="fft-readout"></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section shell">
+      <header class="section-head reveal"><p>03 / FEATURE EXTRACTION</p><span>SIGNAL-DERIVED ONLY</span><h2>Twenty-five ways to<br>describe one vibration window.</h2></header>
+      <div class="feature-layout">
+        <div class="feature-console instrument reveal">
+          <div class="instrument-head"><span>Feature vector / selected window</span><b id="feature-class">HEALTHY</b></div>
+          <div id="feature-readouts" class="readouts"></div>
+          <div class="feature-note"><b>Excluded from model X</b><span>File_ID · Load · RPM · Fault diameter · labels · sampling metadata</span></div>
+        </div>
+        <div class="bands-panel reveal">
+          <div class="bands-title"><span>8-band energy analyzer</span><b>0—6000 Hz</b></div>
+          <div id="energy-bands" class="energy-bands" aria-label="Eight normalized frequency band energies"></div>
+          <p>Power is split into eight nearly equal FFT regions. The display is normalized within the selected sample; the model receives the unscaled energy values.</p>
+        </div>
+      </div>
+      <div class="feature-groups reveal"><span>Amplitude</span><span>Distribution</span><span>Impulsiveness</span><span>Spectral shape</span><span>Band energy ×8</span></div>
+    </section>
+
+    <section id="engine" class="section section-dark">
+      <div class="shell">
+        <header class="section-head light reveal"><p>04 / CLASSIFICATION ENGINE</p><span>CONTROLLED COMPARISON</span><h2>Three candidates.<br>One deployment decision.</h2></header>
+        <div class="models reveal">
+          <article><span class="model-no">M—01</span><h3>SVM</h3><p>RBF decision boundary with training-fold scaling and balanced class weights.</p><dl><div><dt>C</dt><dd>1 / 10</dd></div><div><dt>Gamma</dt><dd>scale / .01</dd></div></dl><b class="model-state">Evaluated</b></article>
+          <article class="selected"><span class="model-no">M—02</span><h3>Random<br>Forest</h3><p>250 nonlinear trees with balanced class weights and interpretable feature importance.</p><dl><div><dt>Depth</dt><dd>∞ / 12</dd></div><div><dt>Leaf</dt><dd>1 / 3</dd></div></dl><b class="model-state"><i></i> Deployed</b></article>
+          <article><span class="model-no">M—03</span><h3>XGBoost</h3><p>Boosted trees with balanced sample weights, subsampling and soft probabilities.</p><dl><div><dt>Depth</dt><dd>3 / 5</dd></div><div><dt>Rate</dt><dd>.05 / .10</dd></div></dl><b class="model-state">Evaluated</b></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="validation" class="section shell">
+      <header class="section-head reveal"><p>05 / VALIDATION</p><span>THE ENGINEERING CONTROL</span><h2>Windows may move.<br>Recordings never split.</h2></header>
+      <div class="validation-grid">
+        <div class="validation-card reveal">
+          <div class="card-label"><span>Stratified Group K-Fold</span><b>4 FOLDS</b></div>
+          <h3>GROUP = FILE_ID</h3>
+          <div class="fold-map" aria-label="Four grouped folds"><div><i class="test"></i><i></i><i></i><i></i></div><div><i></i><i class="test"></i><i></i><i></i></div><div><i></i><i></i><i class="test"></i><i></i></div><div><i></i><i></i><i></i><i class="test"></i></div></div>
+          <p>Every recording stays wholly in train or test. Each outer test fold contains every class, including Normal.</p>
+          <dl><div><dt>Inner tuning</dt><dd>3 grouped folds</dd></div><div><dt>Seed</dt><dd>42</dd></div></dl>
+        </div>
+        <div class="validation-card reveal">
+          <div class="card-label"><span>Leave-One-Load-Out</span><b>PRIMARY</b></div>
+          <h3>UNSEEN OPERATING LOAD</h3>
+          <div class="load-folds"><div><b>L0</b><span>TEST</span><i></i><i></i><i></i></div><div><i></i><b>L1</b><span>TEST</span><i></i><i></i></div><div><i></i><i></i><b>L2</b><span>TEST</span><i></i></div><div><i></i><i></i><i></i><b>L3</b><span>TEST</span></div></div>
+          <p>Train on three loads. Test on the fourth. This exposes load-sensitive shortcuts that random window splitting would hide.</p>
+          <dl><div><dt>Leakage rule</dt><dd>Zero shared files</dd></div><div><dt>Headline</dt><dd>Mean ± SD</dd></div></dl>
+        </div>
+      </div>
+      <div class="leakage-banner reveal"><span>LEAKAGE INTERLOCK</span><strong>TRAIN FILES ∩ TEST FILES = ∅</strong><p>Scaler fitting, class weighting and hyperparameter selection occur inside training folds only.</p></div>
+    </section>
+
+    <section id="results" class="section results-section">
+      <div class="shell">
+        <header class="section-head reveal"><p>BENCHMARK RESULTS</p><span>LEAVE-ONE-LOAD-OUT</span><h2>High signal confidence.<br>Low deployment bravado.</h2></header>
+        <div class="results-grid">
+          <article class="result-card reveal"><div><span>Binary task</span><b>Healthy / Faulty</b></div><p class="result-model">Random Forest</p><dl><div><dt>Balanced accuracy</dt><dd>1.0000 <small>± 0.0000</small></dd></div><div><dt>Macro-F1</dt><dd>1.0000 <small>± 0.0000</small></dd></div><div><dt>Healthy recall</dt><dd>1.0000 <small>± 0.0000</small></dd></div></dl></article>
+          <article class="result-card reveal"><div><span>Four-class task</span><b>Fault localization</b></div><p class="result-model">Random Forest</p><dl><div><dt>Balanced accuracy</dt><dd>0.9813 <small>± 0.0356</small></dd></div><div><dt>Macro-F1</dt><dd>0.9810 <small>± 0.0361</small></dd></div><div><dt>Normal recall</dt><dd>1.0000 <small>± 0.0000</small></dd></div></dl></article>
+          <aside class="benchmark-stamp reveal"><span>CWRU</span><strong>BENCHMARK</strong><hr><b>FIELD VALIDATION</b><em>PENDING</em><p>Perfect binary separation was leakage-audited. It is not presented as proof of ceiling-fan performance.</p></aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="diagnostic" class="section section-dark diagnostic-section">
+      <div class="shell">
+        <header class="section-head light reveal"><p>INTERACTIVE DIAGNOSTIC</p><span>REAL MODEL / IN BROWSER</span><h2>Put a signal<br>on the bench.</h2></header>
+        <div class="diagnostic-grid reveal">
+          <div class="diagnostic-controls">
+            <div class="control-head"><span>Input source</span><b id="input-state">CWRU SAMPLE</b></div>
+            <div class="sample-picker" role="group" aria-label="Diagnostic sample">
+              <button class="active" data-diagnostic="healthy">097<br><small>Normal</small></button><button data-diagnostic="inner">105<br><small>Inner</small></button><button data-diagnostic="ball">118<br><small>Ball</small></button><button data-diagnostic="outer">130<br><small>Outer</small></button>
+            </div>
+            <label class="upload-box" for="signal-upload"><span>↑</span><b>Load 12 kHz signal CSV</b><small>Numeric values · minimum 2048 samples</small><input id="signal-upload" type="file" accept=".csv,text/csv"></label>
+            <p class="upload-note">The static web instrument accepts 12 kHz CSV. The full Python dashboard also accepts `.mat`, `.npy`, and 48 kHz input.</p>
+            <div id="diagnostic-error" class="diagnostic-error" role="alert"></div>
+          </div>
+          <div class="diagnostic-output">
+            <div class="diagnostic-primary"><div><span>Bearing condition</span><strong id="condition-output">HEALTHY</strong><small id="confidence-output">100.0% confidence</small></div><div class="health-dial" id="health-dial"><b id="health-output">100</b><span>Health<br>index</span></div></div>
+            <div class="fault-output"><span>Fault type</span><strong id="fault-output">NORMAL</strong><b id="window-output">01 WINDOW</b></div>
+            <div id="probability-bars" class="probability-bars"></div>
+            <p class="health-note">Health Index = 100 × predicted Healthy probability. It is not remaining useful life or a maintenance safety score.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="interpretation" class="section shell">
+      <header class="section-head reveal"><p>06 / MODEL INTERPRETATION</p><span>OUT-OF-FOLD PERMUTATION</span><h2>What changes<br>the decision?</h2></header>
+      <div class="importance-layout reveal">
+        <div class="importance-chart">
+          <div><span>Spectral Spread</span><i style="--v:100%"></i><b>0.366</b></div>
+          <div><span>RMS</span><i style="--v:34%"></i><b>0.125</b></div>
+          <div><span>Band Energy 6</span><i style="--v:24%"></i><b>0.090</b></div>
+          <div><span>Band Energy 8</span><i style="--v:24%"></i><b>0.087</b></div>
+          <div><span>Peak-to-peak</span><i style="--v:13%"></i><b>0.048</b></div>
+        </div>
+        <aside><span>Reading the chart</span><p>Values show representative mean permutation importance from the evaluated tree models. Correlated features can substitute for one another, so a small individual value does not imply irrelevance.</p><b>Association ≠ physical causality</b></aside>
+      </div>
+    </section>
+
+    <section id="limitations" class="section field-section">
+      <div class="shell">
+        <header class="section-head reveal"><p>LAB → FIELD</p><span>DOMAIN GAP</span><h2>Credibility begins where<br>the benchmark ends.</h2></header>
+        <div class="lab-field reveal">
+          <article><span>CWRU LAB</span><h3>Controlled evidence</h3><ul><li>Laboratory motor</li><li>Seeded EDM faults</li><li>Known sensor position</li><li>Four controlled loads</li></ul></article>
+          <div class="transfer"><span>TRANSFER</span><i>→</i><b>Validation<br>required</b></div>
+          <article><span>REAL FAN</span><h3>Uncontrolled reality</h3><ul><li>Different motor and bearing</li><li>Natural degradation</li><li>Mounting variation</li><li>Environmental noise</li></ul></article>
+        </div>
+        <div class="field-status reveal"><i></i><span>FIELD VALIDATION STATUS</span><strong>PENDING</strong><p>Next: device-grouped testing on naturally healthy and degraded Novela fan motors. No unsafe fault creation.</p></div>
+      </div>
+    </section>
+
+    <section class="final-cta shell reveal">
+      <div><p class="eyebrow">Diagnostic bay / ready</p><h2>Have a vibration<br>signal?</h2></div>
+      <div><p>Load a 12 kHz numeric CSV and run the actual exported Random Forest directly in this browser.</p><a class="button primary" href="#diagnostic">Run diagnostic <span>↑</span></a></div>
+    </section>
+  </main>
+
+  <footer><div class="shell"><a class="brand" href="#top"><span class="brand-mark"></span>CWRU / BD-25</a><p>Real vibration. Grouped validation. Honest limits.</p><span class="mono">12 kHz / 2048 / 25F</span></div></footer>
+
+  <script src="site-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

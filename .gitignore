@@ -1,0 +1,9 @@
+.venv/
+.cache/
+__pycache__/
+*.pyc
+.DS_Store
+.aws/
+data/raw/
+*.save
+lmao.csv
