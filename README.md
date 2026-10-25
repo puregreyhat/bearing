@@ -75,14 +75,15 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Open the Vite URL shown in the terminal, normally `http://localhost:5173`.
+Open the Vite URL shown in the terminal, normally `http://localhost:5173` or
+`http://localhost:5174` if port 5173 is already in use.
 The dashboard starts with the **01 Input & configuration** section. After a
 diagnosis is submitted, it displays the diagnosis, signal evidence, data
 quality, interpretation workspace, and processing details.
 
 ### Admin panel
 
-Open `http://localhost:5173/admin` to view the separate SQLite-backed admin
+Open `http://localhost:5173/admin` or `http://localhost:5174/admin` to view the separate SQLite-backed admin
 panel. Every completed diagnosis is stored in `data/bearing_health.db` with
 these five fields: test ID, creation time, input filename, model family, and
 predicted result. The database file is intentionally ignored by Git.
@@ -102,6 +103,22 @@ VITE_API_URL=http://127.0.0.1:8000
 GET  /api/health
 GET  /api/models?task=binary
 POST /api/diagnose
+GET  /api/admin/tests
+GET  /api/admin/tests/{test_id}
+```
+
+The backend allows local frontend origins on ports 5173 and 5174. If the UI
+shows `Failed to fetch`, restart both services so the current backend code is
+running:
+
+```powershell
+# Terminal 1
+conda activate bearing
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+
+# Terminal 2
+cd frontend
+npm.cmd run dev
 ```
 
 Example diagnosis request using a bundled sample:
