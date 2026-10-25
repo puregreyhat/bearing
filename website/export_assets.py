@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Export real CWRU samples and fitted Random Forests for the static website."""
+"""Export a deterministic browser demo from the canonical deployment artifacts.
+
+The static site is an explanatory demo, not the supported SRS dashboard. Streamlit
+and ``src/inference.py`` remain the source of truth for production-like inference.
+"""
 
 import json
 import sys
@@ -7,12 +11,14 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+import pandas as pd
 from scipy.io import loadmat
 from scipy.signal import decimate
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from features import extract_features
+from config import FEATURE_NAMES, FEATURE_VERSION, preprocessing_config
 
 SAMPLES = {"healthy": 97, "inner": 105, "ball": 118, "outer": 130}
 
@@ -46,7 +52,7 @@ def main():
     for label, file_id in SAMPLES.items():
         window = signal(file_id)[:2048]
         features = extract_features(window, 12000)
-        row = np.array([[features[name] for name in artifacts["binary"]["features"]]])
+        row = pd.DataFrame([[features[name] for name in artifacts["binary"]["features"]]], columns=artifacts["binary"]["features"])
         exported_samples[label] = {
             "file": file_id,
             "wave": np.round(window[::4], 7).tolist(),
@@ -55,7 +61,23 @@ def main():
             "binary": dict(zip(artifacts["binary"]["classes"], np.round(artifacts["binary"]["model"].predict_proba(row)[0], 6))),
             "multiclass": dict(zip(artifacts["multiclass"]["classes"], np.round(artifacts["multiclass"]["model"].predict_proba(row)[0], 6))),
         }
-    payload = {"samples": exported_samples, "models": {task: forest(artifact) for task, artifact in artifacts.items()}}
+    payload = {
+        "contract": {
+            "surface": "generated_browser_demo",
+            "source_of_truth": "src/inference.py and the Streamlit dashboard",
+            "model_families": ["rf"],
+            "feature_version": FEATURE_VERSION,
+            "features": FEATURE_NAMES,
+            "preprocessing": preprocessing_config(),
+            "limitations": [
+                "Embedded samples and Random Forests only",
+                "No arbitrary MAT/NPY upload or model selection",
+                "Use Streamlit for the supported SRS workflow",
+            ],
+        },
+        "samples": exported_samples,
+        "models": {task: forest(artifact) for task, artifact in artifacts.items()},
+    }
     output = ROOT / "website/dist/site-data.js"
     output.write_text("window.SITE_DATA=" + json.dumps(payload, separators=(",", ":")) + ";")
     print(f"Wrote {output} ({output.stat().st_size / 1024:.1f} KiB)")

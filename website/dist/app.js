@@ -226,7 +226,6 @@
   function extractFeatures(windowValues) {
     if (windowValues.length !== 2048) throw new Error('Each model window must contain exactly 2048 samples.');
     const stats = moments(windowValues);
-    if (!stats.std) throw new Error('Signal has no variance and cannot be diagnosed.');
     const absolute = windowValues.map(Math.abs);
     const rms = Math.sqrt(mean(windowValues.map(value => value * value)));
     const meanAbs = mean(absolute);
@@ -235,7 +234,7 @@
     const magnitudes = fftMagnitudes(windowValues);
     const power = magnitudes.map(value => value * value);
     const totalPower = power.reduce((sum, value) => sum + value, 0);
-    const probabilities = power.map(value => value / totalPower);
+    const probabilities = totalPower ? power.map(value => value / totalPower) : power.map(() => 0);
     const frequencyStep = 12000 / windowValues.length;
     const centroid = probabilities.reduce((sum, value, index) => sum + index * frequencyStep * value, 0);
     const spread = Math.sqrt(probabilities.reduce((sum, value, index) => sum + Math.pow(index * frequencyStep - centroid, 2) * value, 0));
@@ -244,12 +243,14 @@
     const peakIndex = magnitudes.indexOf(Math.max(...magnitudes));
     const features = {
       RMS: rms, Std: stats.std, Peak: peak, Kurtosis: stats.kurtosis,
-      Crest_Factor: peak / rms, FFT_Peak_Frequency: peakIndex * frequencyStep,
+      Crest_Factor: rms ? peak / rms : 0, FFT_Peak_Frequency: peakIndex * frequencyStep,
       Peak_to_Peak: Math.max(...windowValues) - Math.min(...windowValues), Mean: stats.mean,
-      Skewness: stats.skew, Shape_Factor: rms / meanAbs, Impulse_Factor: peak / meanAbs,
-      Margin_Factor: peak / (sqrtAbsMean * sqrtAbsMean), FFT_Peak_Amplitude: magnitudes[peakIndex],
+      Skewness: stats.skew, Shape_Factor: meanAbs ? rms / meanAbs : 0,
+      Impulse_Factor: meanAbs ? peak / meanAbs : 0,
+      Margin_Factor: sqrtAbsMean ? peak / (sqrtAbsMean * sqrtAbsMean) : 0,
+      FFT_Peak_Amplitude: magnitudes[peakIndex],
       Spectral_Centroid: centroid, Spectral_Spread: spread, Spectral_Entropy: entropy,
-      Spectral_Kurtosis: spectralKurtosis,
+      Spectral_Kurtosis: totalPower ? spectralKurtosis : 0,
     };
     let offset = 0;
     const base = Math.floor(power.length / 8), extra = power.length % 8;

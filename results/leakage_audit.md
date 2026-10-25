@@ -1,6 +1,6 @@
 # Leakage audit
 
-34 fold/model results reached 99.5%, so leakage was explicitly rechecked:
+33 fold/model results reached 99.5%, so leakage was explicitly rechecked:
 
 - `train.py` asserts disjoint File_ID sets for every outer fold.
 - Feature selection hard-excludes IDs, labels, load, RPM, diameter, sampling rate, and window metadata.

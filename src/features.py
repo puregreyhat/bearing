@@ -4,6 +4,12 @@ import numpy as np
 from scipy.stats import kurtosis, skew
 
 
+def _finite_statistic(value):
+    """Return a stable numeric value for degenerate windows."""
+    value = float(value)
+    return value if np.isfinite(value) else 0.0
+
+
 def extract_features(x, sampling_rate):
     x = np.asarray(x, dtype=float)
     absolute = np.abs(x)
@@ -26,7 +32,8 @@ def extract_features(x, sampling_rate):
     values = {
         "RMS": rms, "Std": np.std(x), "Peak": peak,
         "Peak_to_Peak": np.ptp(x), "Mean": np.mean(x),
-        "Kurtosis": kurtosis(x, fisher=False), "Skewness": skew(x),
+        "Kurtosis": _finite_statistic(kurtosis(x, fisher=False)),
+        "Skewness": _finite_statistic(skew(x)),
         "Crest_Factor": peak / rms if rms else 0,
         "Shape_Factor": rms / mean_abs if mean_abs else 0,
         "Impulse_Factor": peak / mean_abs if mean_abs else 0,
@@ -35,7 +42,7 @@ def extract_features(x, sampling_rate):
         "FFT_Peak_Amplitude": np.max(spectrum),
         "Spectral_Centroid": centroid, "Spectral_Spread": spread,
         "Spectral_Entropy": -np.sum(nonzero * np.log2(nonzero)) if nonzero.size else 0,
-        "Spectral_Kurtosis": kurtosis(power, fisher=False) if total_power else 0,
+        "Spectral_Kurtosis": _finite_statistic(kurtosis(power, fisher=False)) if total_power else 0,
     }
     values.update({f"Band_Energy_{i + 1}": band.sum() for i, band in enumerate(bands)})
     if not np.isfinite(list(values.values())).all():

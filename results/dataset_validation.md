@@ -6,7 +6,7 @@
 - Labels cross-checked against manifest: PASS
 - Numeric feature dtypes: PASS
 - Imbalance flagged (>1.5x largest/smallest class): YES
-- At least 300 windows per Fault_Type: WARNING â€” Normal
+- At least 300 windows per Fault_Type: WARNING — Normal
 
 ## Windows per fault type
 

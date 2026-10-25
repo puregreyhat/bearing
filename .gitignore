@@ -1,6 +1,7 @@
 .venv/
 .cache/
 __pycache__/
+\.pytest-tmp*/
 *.pyc
 .DS_Store
 .aws/

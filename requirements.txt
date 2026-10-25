@@ -6,3 +6,7 @@ tabulate
 scikit-learn
 xgboost
 streamlit
+joblib
+fastapi
+uvicorn
+python-multipart

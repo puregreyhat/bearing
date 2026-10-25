@@ -1,0 +1,492 @@
+{
+  "registry_schema_version": 1,
+  "generated_at_utc": "2026-10-24T19:27:05.632529+00:00",
+  "contract": {
+    "feature_version": "cwru-signal-features-25-v1",
+    "features": [
+      "RMS",
+      "Std",
+      "Peak",
+      "Kurtosis",
+      "Crest_Factor",
+      "FFT_Peak_Frequency",
+      "Peak_to_Peak",
+      "Mean",
+      "Skewness",
+      "Shape_Factor",
+      "Impulse_Factor",
+      "Margin_Factor",
+      "FFT_Peak_Amplitude",
+      "Spectral_Centroid",
+      "Spectral_Spread",
+      "Spectral_Entropy",
+      "Spectral_Kurtosis",
+      "Band_Energy_1",
+      "Band_Energy_2",
+      "Band_Energy_3",
+      "Band_Energy_4",
+      "Band_Energy_5",
+      "Band_Energy_6",
+      "Band_Energy_7",
+      "Band_Energy_8"
+    ],
+    "preprocessing": {
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "window_size": 2048,
+      "window_overlap": 0,
+      "incomplete_tail": "discard",
+      "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+    }
+  },
+  "models": [
+    {
+      "artifact": "models\\binary_model.joblib",
+      "artifact_schema_version": 1,
+      "task": "binary",
+      "model_family": "rf",
+      "classes": [
+        "Faulty",
+        "Healthy"
+      ],
+      "features": [
+        "RMS",
+        "Std",
+        "Peak",
+        "Kurtosis",
+        "Crest_Factor",
+        "FFT_Peak_Frequency",
+        "Peak_to_Peak",
+        "Mean",
+        "Skewness",
+        "Shape_Factor",
+        "Impulse_Factor",
+        "Margin_Factor",
+        "FFT_Peak_Amplitude",
+        "Spectral_Centroid",
+        "Spectral_Spread",
+        "Spectral_Entropy",
+        "Spectral_Kurtosis",
+        "Band_Energy_1",
+        "Band_Energy_2",
+        "Band_Energy_3",
+        "Band_Energy_4",
+        "Band_Energy_5",
+        "Band_Energy_6",
+        "Band_Energy_7",
+        "Band_Energy_8"
+      ],
+      "feature_count": 25,
+      "feature_version": "cwru-signal-features-25-v1",
+      "window_size": 2048,
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "preprocessing": {
+        "target_sampling_rate": 12000,
+        "supported_input_sampling_rates": [
+          12000,
+          48000
+        ],
+        "window_size": 2048,
+        "window_overlap": 0,
+        "incomplete_tail": "discard",
+        "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+      },
+      "selection": "highest mean Leave-One-Load-Out macro-F1",
+      "validation": {
+        "selection_scheme": "leave_one_load_out",
+        "selection_metric": "macro_f1",
+        "cv_macro_f1": {
+          "rf": 1.0,
+          "svm": 0.8894368787152807,
+          "xgboost": 0.9955974842767296
+        }
+      },
+      "dataset_identity": {
+        "manifest": "39e3fd38e3b0849264a2eed9075ab14f598115d8c4da6412cd8b177adb5035db",
+        "features_2048": "9d063cdf119290bc31527d1005fc4d1b86a1d4d577f6e1743b8a49d72501db6b"
+      },
+      "legacy_artifact": false,
+      "created_at_utc": "2026-10-24T19:26:42.292410+00:00",
+      "available": true
+    },
+    {
+      "artifact": "models\\binary_svm_model.joblib",
+      "artifact_schema_version": 1,
+      "task": "binary",
+      "model_family": "svm",
+      "classes": [
+        "Faulty",
+        "Healthy"
+      ],
+      "features": [
+        "RMS",
+        "Std",
+        "Peak",
+        "Kurtosis",
+        "Crest_Factor",
+        "FFT_Peak_Frequency",
+        "Peak_to_Peak",
+        "Mean",
+        "Skewness",
+        "Shape_Factor",
+        "Impulse_Factor",
+        "Margin_Factor",
+        "FFT_Peak_Amplitude",
+        "Spectral_Centroid",
+        "Spectral_Spread",
+        "Spectral_Entropy",
+        "Spectral_Kurtosis",
+        "Band_Energy_1",
+        "Band_Energy_2",
+        "Band_Energy_3",
+        "Band_Energy_4",
+        "Band_Energy_5",
+        "Band_Energy_6",
+        "Band_Energy_7",
+        "Band_Energy_8"
+      ],
+      "feature_count": 25,
+      "feature_version": "cwru-signal-features-25-v1",
+      "window_size": 2048,
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "preprocessing": {
+        "target_sampling_rate": 12000,
+        "supported_input_sampling_rates": [
+          12000,
+          48000
+        ],
+        "window_size": 2048,
+        "window_overlap": 0,
+        "incomplete_tail": "discard",
+        "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+      },
+      "selection": "Leave-One-Load-Out candidate",
+      "validation": {
+        "selection_scheme": "leave_one_load_out",
+        "selection_metric": "macro_f1",
+        "cv_macro_f1": {
+          "rf": 1.0,
+          "svm": 0.8894368787152807,
+          "xgboost": 0.9955974842767296
+        }
+      },
+      "dataset_identity": {
+        "manifest": "39e3fd38e3b0849264a2eed9075ab14f598115d8c4da6412cd8b177adb5035db",
+        "features_2048": "9d063cdf119290bc31527d1005fc4d1b86a1d4d577f6e1743b8a49d72501db6b"
+      },
+      "legacy_artifact": false,
+      "created_at_utc": "2026-10-24T19:26:41.904326+00:00",
+      "available": true
+    },
+    {
+      "artifact": "models\\binary_xgboost_model.joblib",
+      "artifact_schema_version": 1,
+      "task": "binary",
+      "model_family": "xgboost",
+      "classes": [
+        "Faulty",
+        "Healthy"
+      ],
+      "features": [
+        "RMS",
+        "Std",
+        "Peak",
+        "Kurtosis",
+        "Crest_Factor",
+        "FFT_Peak_Frequency",
+        "Peak_to_Peak",
+        "Mean",
+        "Skewness",
+        "Shape_Factor",
+        "Impulse_Factor",
+        "Margin_Factor",
+        "FFT_Peak_Amplitude",
+        "Spectral_Centroid",
+        "Spectral_Spread",
+        "Spectral_Entropy",
+        "Spectral_Kurtosis",
+        "Band_Energy_1",
+        "Band_Energy_2",
+        "Band_Energy_3",
+        "Band_Energy_4",
+        "Band_Energy_5",
+        "Band_Energy_6",
+        "Band_Energy_7",
+        "Band_Energy_8"
+      ],
+      "feature_count": 25,
+      "feature_version": "cwru-signal-features-25-v1",
+      "window_size": 2048,
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "preprocessing": {
+        "target_sampling_rate": 12000,
+        "supported_input_sampling_rates": [
+          12000,
+          48000
+        ],
+        "window_size": 2048,
+        "window_overlap": 0,
+        "incomplete_tail": "discard",
+        "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+      },
+      "selection": "Leave-One-Load-Out candidate",
+      "validation": {
+        "selection_scheme": "leave_one_load_out",
+        "selection_metric": "macro_f1",
+        "cv_macro_f1": {
+          "rf": 1.0,
+          "svm": 0.8894368787152807,
+          "xgboost": 0.9955974842767296
+        }
+      },
+      "dataset_identity": {
+        "manifest": "39e3fd38e3b0849264a2eed9075ab14f598115d8c4da6412cd8b177adb5035db",
+        "features_2048": "9d063cdf119290bc31527d1005fc4d1b86a1d4d577f6e1743b8a49d72501db6b"
+      },
+      "legacy_artifact": false,
+      "created_at_utc": "2026-10-24T19:26:42.472239+00:00",
+      "available": true
+    },
+    {
+      "artifact": "models\\multiclass_model.joblib",
+      "artifact_schema_version": 1,
+      "task": "multiclass",
+      "model_family": "rf",
+      "classes": [
+        "Ball",
+        "Inner_Race",
+        "Normal",
+        "Outer_Race"
+      ],
+      "features": [
+        "RMS",
+        "Std",
+        "Peak",
+        "Kurtosis",
+        "Crest_Factor",
+        "FFT_Peak_Frequency",
+        "Peak_to_Peak",
+        "Mean",
+        "Skewness",
+        "Shape_Factor",
+        "Impulse_Factor",
+        "Margin_Factor",
+        "FFT_Peak_Amplitude",
+        "Spectral_Centroid",
+        "Spectral_Spread",
+        "Spectral_Entropy",
+        "Spectral_Kurtosis",
+        "Band_Energy_1",
+        "Band_Energy_2",
+        "Band_Energy_3",
+        "Band_Energy_4",
+        "Band_Energy_5",
+        "Band_Energy_6",
+        "Band_Energy_7",
+        "Band_Energy_8"
+      ],
+      "feature_count": 25,
+      "feature_version": "cwru-signal-features-25-v1",
+      "window_size": 2048,
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "preprocessing": {
+        "target_sampling_rate": 12000,
+        "supported_input_sampling_rates": [
+          12000,
+          48000
+        ],
+        "window_size": 2048,
+        "window_overlap": 0,
+        "incomplete_tail": "discard",
+        "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+      },
+      "selection": "highest mean Leave-One-Load-Out macro-F1",
+      "validation": {
+        "selection_scheme": "leave_one_load_out",
+        "selection_metric": "macro_f1",
+        "cv_macro_f1": {
+          "rf": 0.9810361622324782,
+          "svm": 0.9075226076715627,
+          "xgboost": 0.9494878409984558
+        }
+      },
+      "dataset_identity": {
+        "manifest": "39e3fd38e3b0849264a2eed9075ab14f598115d8c4da6412cd8b177adb5035db",
+        "features_2048": "9d063cdf119290bc31527d1005fc4d1b86a1d4d577f6e1743b8a49d72501db6b"
+      },
+      "legacy_artifact": false,
+      "created_at_utc": "2026-10-24T19:26:43.004776+00:00",
+      "available": true
+    },
+    {
+      "artifact": "models\\multiclass_svm_model.joblib",
+      "artifact_schema_version": 1,
+      "task": "multiclass",
+      "model_family": "svm",
+      "classes": [
+        "Ball",
+        "Inner_Race",
+        "Normal",
+        "Outer_Race"
+      ],
+      "features": [
+        "RMS",
+        "Std",
+        "Peak",
+        "Kurtosis",
+        "Crest_Factor",
+        "FFT_Peak_Frequency",
+        "Peak_to_Peak",
+        "Mean",
+        "Skewness",
+        "Shape_Factor",
+        "Impulse_Factor",
+        "Margin_Factor",
+        "FFT_Peak_Amplitude",
+        "Spectral_Centroid",
+        "Spectral_Spread",
+        "Spectral_Entropy",
+        "Spectral_Kurtosis",
+        "Band_Energy_1",
+        "Band_Energy_2",
+        "Band_Energy_3",
+        "Band_Energy_4",
+        "Band_Energy_5",
+        "Band_Energy_6",
+        "Band_Energy_7",
+        "Band_Energy_8"
+      ],
+      "feature_count": 25,
+      "feature_version": "cwru-signal-features-25-v1",
+      "window_size": 2048,
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "preprocessing": {
+        "target_sampling_rate": 12000,
+        "supported_input_sampling_rates": [
+          12000,
+          48000
+        ],
+        "window_size": 2048,
+        "window_overlap": 0,
+        "incomplete_tail": "discard",
+        "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+      },
+      "selection": "Leave-One-Load-Out candidate",
+      "validation": {
+        "selection_scheme": "leave_one_load_out",
+        "selection_metric": "macro_f1",
+        "cv_macro_f1": {
+          "rf": 0.9810361622324782,
+          "svm": 0.9075226076715627,
+          "xgboost": 0.9494878409984558
+        }
+      },
+      "dataset_identity": {
+        "manifest": "39e3fd38e3b0849264a2eed9075ab14f598115d8c4da6412cd8b177adb5035db",
+        "features_2048": "9d063cdf119290bc31527d1005fc4d1b86a1d4d577f6e1743b8a49d72501db6b"
+      },
+      "legacy_artifact": false,
+      "created_at_utc": "2026-10-24T19:26:42.561703+00:00",
+      "available": true
+    },
+    {
+      "artifact": "models\\multiclass_xgboost_model.joblib",
+      "artifact_schema_version": 1,
+      "task": "multiclass",
+      "model_family": "xgboost",
+      "classes": [
+        "Ball",
+        "Inner_Race",
+        "Normal",
+        "Outer_Race"
+      ],
+      "features": [
+        "RMS",
+        "Std",
+        "Peak",
+        "Kurtosis",
+        "Crest_Factor",
+        "FFT_Peak_Frequency",
+        "Peak_to_Peak",
+        "Mean",
+        "Skewness",
+        "Shape_Factor",
+        "Impulse_Factor",
+        "Margin_Factor",
+        "FFT_Peak_Amplitude",
+        "Spectral_Centroid",
+        "Spectral_Spread",
+        "Spectral_Entropy",
+        "Spectral_Kurtosis",
+        "Band_Energy_1",
+        "Band_Energy_2",
+        "Band_Energy_3",
+        "Band_Energy_4",
+        "Band_Energy_5",
+        "Band_Energy_6",
+        "Band_Energy_7",
+        "Band_Energy_8"
+      ],
+      "feature_count": 25,
+      "feature_version": "cwru-signal-features-25-v1",
+      "window_size": 2048,
+      "target_sampling_rate": 12000,
+      "supported_input_sampling_rates": [
+        12000,
+        48000
+      ],
+      "preprocessing": {
+        "target_sampling_rate": 12000,
+        "supported_input_sampling_rates": [
+          12000,
+          48000
+        ],
+        "window_size": 2048,
+        "window_overlap": 0,
+        "incomplete_tail": "discard",
+        "resampling_method": "scipy.signal.decimate(factor=4, ftype='fir', zero_phase=True)"
+      },
+      "selection": "Leave-One-Load-Out candidate",
+      "validation": {
+        "selection_scheme": "leave_one_load_out",
+        "selection_metric": "macro_f1",
+        "cv_macro_f1": {
+          "rf": 0.9810361622324782,
+          "svm": 0.9075226076715627,
+          "xgboost": 0.9494878409984558
+        }
+      },
+      "dataset_identity": {
+        "manifest": "39e3fd38e3b0849264a2eed9075ab14f598115d8c4da6412cd8b177adb5035db",
+        "features_2048": "9d063cdf119290bc31527d1005fc4d1b86a1d4d577f6e1743b8a49d72501db6b"
+      },
+      "legacy_artifact": false,
+      "created_at_utc": "2026-10-24T19:26:43.471655+00:00",
+      "available": true
+    }
+  ],
+  "rejected_artifacts": []
+}

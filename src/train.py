@@ -2,10 +2,12 @@
 """Leakage-safe nested evaluation and final model fitting for both diagnosis tasks."""
 
 import json
+import hashlib
 import os
 import time
 import warnings
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 
 os.environ.setdefault("OMP_NUM_THREADS", "4")
@@ -26,6 +28,9 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.svm import SVC
 from sklearn.utils.class_weight import compute_sample_weight
 from xgboost import XGBClassifier
+
+from config import (FEATURE_NAMES, FEATURE_VERSION, SUPPORTED_INPUT_SAMPLING_RATES,
+                    TARGET_SAMPLING_RATE, WINDOW_SIZE, preprocessing_config)
 
 ROOT = Path(__file__).resolve().parents[1]
 SEED = 42
@@ -96,6 +101,46 @@ def modal_params(rows, task, model):
     return json.loads(Counter(values).most_common(1)[0][0])
 
 
+def file_sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def artifact_payload(pipeline, task, model_name, classes, features, means, params, selected):
+    """Build the self-describing deployment artifact for one task/model."""
+    return {
+        "artifact_schema_version": 1,
+        "artifact_role": "deployment_candidate",
+        "deployment_selected": bool(selected),
+        "model": pipeline,
+        "model_family": model_name,
+        "features": features,
+        "feature_version": FEATURE_VERSION,
+        "classes": classes,
+        "task": task,
+        "window_size": WINDOW_SIZE,
+        "target_sampling_rate": TARGET_SAMPLING_RATE,
+        "supported_input_sampling_rates": list(SUPPORTED_INPUT_SAMPLING_RATES),
+        "resampling_method": preprocessing_config()["resampling_method"],
+        "preprocessing": preprocessing_config(),
+        "hyperparameters": params,
+        "selection": "highest mean Leave-One-Load-Out macro-F1" if selected else "Leave-One-Load-Out candidate",
+        "validation": {
+            "selection_scheme": "leave_one_load_out",
+            "selection_metric": "macro_f1",
+            "cv_macro_f1": means.to_dict(),
+        },
+        "dataset_identity": {
+            "manifest": file_sha256(ROOT / "docs/data_manifest.csv"),
+            "features_2048": file_sha256(ROOT / "data/processed/cwru_features.csv"),
+        },
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def main():
     np.random.seed(SEED)
     results = ROOT / "results"
@@ -104,6 +149,7 @@ def main():
     models_dir.mkdir(exist_ok=True)
     df = pd.read_csv(ROOT / "data/processed/cwru_features.csv", dtype={"File_ID": str})
     features = [column for column in df if column not in EXCLUDED]
+    assert features == FEATURE_NAMES, "feature order must match the shared inference contract"
     assert not EXCLUDED.intersection(features)
     assert all(pd.api.types.is_numeric_dtype(df[column]) for column in features)
     (results / "feature_list.json").write_text(json.dumps(features, indent=2))
@@ -169,14 +215,20 @@ def main():
         y = encoder.transform(labels)
         means = logo[logo.task == task].groupby("model").macro_f1.mean()
         winner = means.idxmax()
-        params = modal_params(rows, task, winner)
-        pipeline = model_specs(len(encoder.classes_))[winner][0].set_params(**params)
-        fit_args = {"model__sample_weight": compute_sample_weight("balanced", y)} if winner == "xgboost" else {}
-        pipeline.fit(x, y, **fit_args)
-        joblib.dump({"model": pipeline, "features": features, "classes": encoder.classes_, "task": task,
-                     "selection": "highest mean Leave-One-Load-Out macro-F1", "cv_macro_f1": means.to_dict()},
-                    models_dir / f"{task}_model.joblib")
-        print(f"Saved {task} winner: {winner} {params}")
+        for model_name in model_specs(len(encoder.classes_)):
+            params = modal_params(rows, task, model_name)
+            pipeline = model_specs(len(encoder.classes_))[model_name][0].set_params(**params)
+            fit_args = {"model__sample_weight": compute_sample_weight("balanced", y)} if model_name == "xgboost" else {}
+            pipeline.fit(x, y, **fit_args)
+            artifact = artifact_payload(
+                pipeline, task, model_name, encoder.classes_, features, means, params, model_name == winner
+            )
+            candidate_path = models_dir / f"{task}_{model_name}_model.joblib"
+            joblib.dump(artifact, candidate_path)
+            print(f"Saved {task} candidate: {model_name} {params}")
+            if model_name == winner:
+                joblib.dump(artifact, models_dir / f"{task}_model.joblib")
+                print(f"Saved {task} deployment alias: {winner}")
 
 
 if __name__ == "__main__":
