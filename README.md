@@ -1,26 +1,65 @@
-# CWRU Bearing Fault Diagnosis
+# Bearing Health
 
-End-to-end bearing-fault benchmark using real CWRU drive-end vibration recordings only.
+End-to-end bearing fault diagnosis using CWRU drive-end vibration recordings.
+The project includes a Python ML pipeline, a FastAPI inference service, and a
+React/shadcn dashboard for interactive diagnosis.
 
-## Project structure
+## What the project provides
+
+- Binary classification: `Healthy` or `Faulty`.
+- Multiclass classification: `Normal`, `Ball`, `Inner_Race`, or `Outer_Race`.
+- Random Forest, SVM, and XGBoost model artifacts.
+- 25-feature vibration-signal contract with 2,048-sample non-overlapping windows.
+- Support for CWRU `.mat` files and numeric `.csv` / `.npy` uploads.
+- Live diagnosis through FastAPI and the React frontend.
+- Streamlit dashboard for the legacy/reference workflow.
+- Evaluation reports, model registry metadata, and automated tests.
+
+## Repository structure
 
 ```text
 bearing/
-├── app/                 # supported Streamlit dashboard
-├── src/                 # data, feature, training, registry, and inference code
-├── tests/               # automated verification and SRS acceptance tests
-├── data/                # raw and processed CWRU data
-├── models/              # self-describing trained artifacts
-├── results/             # evaluation reports, registry, and plots
-├── docs/                # SRS, guides, plans, and handover documentation
-├── demo_csv_files/      # small example inputs for demonstrations
-└── website/             # separate generated browser demo
+|-- backend/              # FastAPI application and response schemas
+|-- frontend/             # React + TypeScript + Vite + shadcn UI
+|-- app/                  # Streamlit dashboard
+|-- src/                  # Data preparation, features, training, registry, inference
+|-- tests/                # Automated tests and SRS acceptance checks
+|-- data/                 # Raw and processed CWRU data
+|-- models/               # Trained model artifacts
+|-- results/              # Metrics, reports, plots, and registry metadata
+|-- docs/                 # SRS, guides, plans, and handover documentation
+|-- demo_csv_files/       # Small example inputs for API demonstrations
+`-- website/              # Separate generated static browser demo
 ```
 
-The shadcn/React UI is in `frontend/`; the current Streamlit dashboard remains
-in `app/`, and the browser demo remains isolated in `website/`.
+## Environment setup
 
-Run the new frontend with:
+Use the Conda environment named `bearing` with Python 3.12. The repository's
+`.venv` uses Python 3.14 and is not the verified environment for the current
+scientific dependency set.
+
+```powershell
+conda create -n bearing python=3.12 -y
+conda activate bearing
+python -m pip install -r requirements.txt
+```
+
+Install test tooling when developing:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+```
+
+## Run the application
+
+Start the FastAPI backend from the repository root:
+
+```powershell
+conda activate bearing
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+In a second terminal, start the React dashboard:
 
 ```powershell
 cd frontend
@@ -28,63 +67,102 @@ npm install
 npm run dev
 ```
 
-The frontend is connected to the FastAPI backend and renders the existing
-`InferenceResult` contract. It shows a preview state until the API returns a
-diagnosis.
-
-Run the live API and frontend together in separate terminals:
+On PowerShell systems where `npm` scripts are blocked by execution policy, use
+`npm.cmd` instead:
 
 ```powershell
-conda activate bearing
-uvicorn backend.main:app --reload --port 8000
-cd frontend
-npm run dev
+npm.cmd install
+npm.cmd run dev
 ```
 
-Recommended environment: Python 3.12. The repository has been verified with the
-Conda environment named `bearing`.
+Open the Vite URL shown in the terminal, normally `http://localhost:5173`.
+The dashboard starts with the **01 Input & configuration** section. After a
+diagnosis is submitted, it displays the diagnosis, signal evidence, data
+quality, interpretation workspace, and processing details.
+
+### Frontend API configuration
+
+The frontend uses `http://127.0.0.1:8000` by default. To use another backend,
+create `frontend/.env.local`:
+
+```text
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+### Backend endpoints
+
+```text
+GET  /api/health
+GET  /api/models?task=binary
+POST /api/diagnose
+```
+
+Example diagnosis request using a bundled sample:
+
+```powershell
+curl.exe -X POST `
+  -F "task=binary" `
+  -F "model_family=rf" `
+  -F "sampling_rate=12000" `
+  -F "sample_name=097_normal.csv" `
+  http://127.0.0.1:8000/api/diagnose
+```
+
+For an uploaded file, replace `sample_name` with:
+
+```powershell
+-F "signal_file=@C:\path\to\signal.csv"
+```
+
+## Streamlit dashboard
+
+The Streamlit dashboard remains available as a reference and fallback product
+surface:
 
 ```powershell
 conda activate bearing
-python -m pip install -r requirements.txt
+streamlit run app/dashboard.py
+```
+
+## Rebuild the ML pipeline
+
+Run these commands from the repository root after activating the `bearing`
+environment:
+
+```powershell
 python src/download.py
 python src/extract.py
 python src/validate.py
 python src/train.py
 python src/evaluate.py
 python src/model_registry.py
-streamlit run app/dashboard.py
 ```
 
-For development and verification, install the test dependencies as well:
+Raw `.mat` files in `data/raw` are preserved. Normal recordings are converted
+from 48 kHz to 12 kHz during extraction. Feature rows use non-overlapping
+2,048-sample windows, and incomplete tails are discarded.
+
+Training produces binary and multiclass artifacts for Random Forest, SVM, and
+XGBoost under `models/`. The registry in `results/model_registry.json` records
+the compatible artifacts and validation metadata.
+
+## Verification
+
+Run the Python test suite:
 
 ```powershell
-python -m pip install -r requirements-dev.txt
-python -m pytest -q --basetemp .pytest-tmp
+conda activate bearing
+pytest -q
 ```
 
-Raw `.mat` files remain untouched in `data/raw`. Normal recordings (97–100) are 48 kHz and are FIR-decimated by four during extraction; all feature rows therefore represent 12 kHz signals. Segmentation is non-overlapping with incomplete tails dropped. Outputs are `cwru_features.csv` (2048 samples) and `cwru_features_4096.csv`.
+Build the frontend:
 
-Training evaluates binary and four-class tasks with nested, file-grouped cross-validation and Leave-One-Load-Out testing. The dashboard accepts numeric `.csv`, `.npy`, or Drive-End `.mat` signals at 12 or 48 kHz. Results are CWRU laboratory benchmarks and must not be treated as validated ceiling-fan performance.
+```powershell
+cd frontend
+npm.cmd run build
+```
 
-# WSL commands
-cd /mnt/c/Users/IDEAPAD/Documents/GitHub/bearing
-conda activate bearing
-streamlit run app/dashboard.py
-
-The repository `.venv` currently points to Python 3.14 and is not the supported
-environment for this project. Use a Python 3.12 environment until the
-dependency set has compatible wheels for Python 3.14.
-
-Training saves Binary and Multiclass artifacts for SVM, Random Forest, and
-XGBoost under `models/`. The deployment alias (`binary_model.joblib` or
-`multiclass_model.joblib`) remains the model selected by Leave-One-Load-Out
-macro-F1. Run `python src/model_registry.py` after training to refresh the
-dashboard's compatible-model registry.
-
-The Streamlit dashboard is the supported SRS product surface. The files in
-`website/dist/` are a generated browser demo using embedded CWRU examples and
-exported Random Forests. Regenerate and verify that demo with:
+Verify the generated static demo:
 
 ```powershell
 conda activate bearing
@@ -92,16 +170,18 @@ python website/export_assets.py
 node website/check.mjs
 ```
 
-Further handover documentation:
+## Important scope limitation
 
-- [`docs/dashboard_user_guide.md`](docs/dashboard_user_guide.md) — operator workflow and result interpretation.
+The models are CWRU laboratory benchmarks. Their outputs must not be treated as
+validated performance for ceiling-fan motors or other machines outside the
+training and validation scope.
+
+## Documentation
+
+- [`docs/IEEE_SRS_Bearing_Fault_Diagnosis_v2_0_UserFlow_Dashboard.md`](docs/IEEE_SRS_Bearing_Fault_Diagnosis_v2_0_UserFlow_Dashboard.md) — SRS and user flow.
+- [`docs/SRS_gap_analysis_and_implementation_plan.md`](docs/SRS_gap_analysis_and_implementation_plan.md) — gap analysis and implementation plan.
+- [`docs/dashboard_user_guide.md`](docs/dashboard_user_guide.md) — dashboard operation and interpretation.
 - [`docs/developer_guide.md`](docs/developer_guide.md) — environment, regeneration, testing, and maintenance.
 - [`docs/artifact_schema.md`](docs/artifact_schema.md) — model artifact, registry, and inference contracts.
-- [`docs/static_demo_guide.md`](docs/static_demo_guide.md) — static website role and source of truth.
-
-Run the Phase 6 automated verification suite from the `bearing` environment:
-
-```powershell
-python -m pip install -r requirements-dev.txt
-pytest -q
-```
+- [`docs/ML_guide.md`](docs/ML_guide.md) — machine-learning workflow.
+- [`docs/static_demo_guide.md`](docs/static_demo_guide.md) — role and maintenance of the static demo.
