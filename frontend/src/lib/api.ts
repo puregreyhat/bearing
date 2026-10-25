@@ -2,6 +2,7 @@ export type Task = "binary" | "multiclass"
 export type Model = "rf" | "svm" | "xgboost"
 
 export type DiagnosisResult = {
+  test_id: string
   task: Task
   model_family: Model
   classes: string[]
@@ -24,6 +25,21 @@ export type DiagnosisResult = {
   warnings: string[]
 }
 
+export type AdminTestLog = {
+  test_id: string
+  created_at: string
+  input_filename: string
+  model_family: Model
+  predicted_result: string
+}
+
+export type AdminTestLogResponse = {
+  items: AdminTestLog[]
+  total: number
+  limit: number
+  offset: number
+}
+
 const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
 
 export async function diagnose(input: {
@@ -44,4 +60,13 @@ export async function diagnose(input: {
   const payload = await response.json()
   if (!response.ok) throw new Error(payload.detail || "Diagnosis request failed")
   return payload as DiagnosisResult
+}
+
+export async function getAdminTests(search = ""): Promise<AdminTestLogResponse> {
+  const query = new URLSearchParams({ limit: "100", offset: "0" })
+  if (search.trim()) query.set("search", search.trim())
+  const response = await fetch(`${API_BASE}/api/admin/tests?${query}`)
+  const payload = await response.json()
+  if (!response.ok) throw new Error(payload.detail || "Could not load test logs")
+  return payload as AdminTestLogResponse
 }

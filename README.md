@@ -80,6 +80,13 @@ The dashboard starts with the **01 Input & configuration** section. After a
 diagnosis is submitted, it displays the diagnosis, signal evidence, data
 quality, interpretation workspace, and processing details.
 
+### Admin panel
+
+Open `http://localhost:5173/admin` to view the separate SQLite-backed admin
+panel. Every completed diagnosis is stored in `data/bearing_health.db` with
+these five fields: test ID, creation time, input filename, model family, and
+predicted result. The database file is intentionally ignored by Git.
+
 ### Frontend API configuration
 
 The frontend uses `http://127.0.0.1:8000` by default. To use another backend,

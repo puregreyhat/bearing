@@ -12,6 +12,7 @@ class ModelOption(BaseModel):
 
 
 class DiagnosisResponse(BaseModel):
+    test_id: str
     task: str
     model_family: str
     classes: list[str]
@@ -32,4 +33,19 @@ class DiagnosisResponse(BaseModel):
     first_window: list[float]
     first_window_features: dict[str, float]
     warnings: list[str]
+
+
+class AdminTestLog(BaseModel):
+    test_id: str
+    created_at: str
+    input_filename: str
+    model_family: str
+    predicted_result: str
+
+
+class AdminTestLogList(BaseModel):
+    items: list[AdminTestLog]
+    total: int
+    limit: int
+    offset: int
 
